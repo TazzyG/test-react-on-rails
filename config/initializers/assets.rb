@@ -12,3 +12,11 @@ Rails.application.config.assets.paths << Rails.root.join('node_modules')
 # application.js, application.css, and all non-JS/CSS in the app/assets
 # folder are already added.
 # Rails.application.config.assets.precompile += %w( admin.js admin.css )
+
+Rake::Task["assets:precompile"]
+    .clear_prerequisites
+    .enhance([:environment, "react_on_rails:assets:compile_environment"])
+    .enhance do
+      Rake::Task["react_on_rails:assets:symlink_non_digested_assets"].invoke
+      Rake::Task["react_on_rails:assets:delete_broken_symlinks"].invoke
+    end
